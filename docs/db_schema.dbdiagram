@@ -1,0 +1,28 @@
+{
+  "version": "3.0.0",
+  "darkMode": true,
+  "gridEnabling": false,
+  "currentViewName": null,
+  "defaultView": {
+    "detailLevel": "All",
+    "relationshipMode": "All",
+    "tablePositions": [
+      {
+        "name": "user",
+        "schemaName": "public",
+        "x": 0,
+        "y": 50
+      },
+      {
+        "name": "note",
+        "schemaName": "public",
+        "x": -243,
+        "y": 34
+      }
+    ],
+    "tableGroupCollapseStates": [],
+    "stickyNoteLayouts": [],
+    "referencePaths": []
+  },
+  "views": {}
+}

@@ -1,0 +1,14 @@
+Table user {
+    user_id BIGINT [primary key]
+	username VARCHAR(100) [not null]
+    email VARCHAR(254) [not null]
+    password CHAR(64) [not null]
+}
+
+Table note {
+    note_id BIGINT [primary key]
+    user_id BIGINT [not null]
+	title text [not null]
+    desc text [not null]
+    created_at BIGINT [not null]
+}
