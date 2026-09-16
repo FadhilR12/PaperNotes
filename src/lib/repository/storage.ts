@@ -8,7 +8,6 @@ import PocketBase from 'pocketbase';
 
 export async function getAllNotes(pb: PocketBase): Promise<Note[]> {
 	try {
-		// Tambahkan sort agar catatan terbaru muncul di urutan pertama
 		const records = await pb.collection('notes').getFullList({
 			sort: '-created'
 		});

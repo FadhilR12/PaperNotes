@@ -113,7 +113,7 @@
 						{note.desc}
 					</p>
 					<time class="mt-5 text-xs font-semibold text-[#75777a] sm:mt-auto sm:pt-5"
-						>{getTimeLabel(note.created_at)}</time
+						>{getTimeLabel(String(note.created_at))}</time
 					>
 				</button>
 			{/each}

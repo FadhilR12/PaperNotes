@@ -6,9 +6,9 @@ export type Note = {
 	created_at: Date;
 };
 
-// export type User = {
-// 	user_id: string;
-// 	username: string;
-// 	email: string;
-// 	password: string;
-// };
+export type User = {
+	id: string;
+	email: string;
+	name: string;
+	password: string;
+};
