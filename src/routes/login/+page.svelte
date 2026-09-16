@@ -1,0 +1,79 @@
+<main class="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-6 py-12 sm:px-8">
+	<a
+		class="inline-flex items-center gap-2.5 self-start"
+		href="index.html"
+		aria-label="PaperNotes home"
+	>
+		<span class="grid h-9 w-9 place-items-center rounded-lg bg-[#1e2022]" aria-hidden="true"
+			><svg class="h-6 w-6" viewBox="0 0 100 100" fill="none"
+				><path
+					d="M30 26C30 23.7909 31.7909 22 34 22H56L70 36V74C70 76.2091 68.2091 78 66 78H34C31.7909 78 30 76.2091 30 74V26Z"
+					fill="#FAF9F6"
+				/><path d="M56 22V34C56 35.1046 56.8954 36 58 36H70" fill="#E5E5E0" /><line
+					x1="40"
+					y1="46"
+					x2="60"
+					y2="46"
+					stroke="#1E2022"
+					stroke-width="3.5"
+					stroke-linecap="round"
+				/><line
+					x1="40"
+					y1="56"
+					x2="56"
+					y2="56"
+					stroke="#1E2022"
+					stroke-width="3.5"
+					stroke-linecap="round"
+				/><line
+					x1="40"
+					y1="66"
+					x2="48"
+					y2="66"
+					stroke="#F59E0B"
+					stroke-width="3.5"
+					stroke-linecap="round"
+				/></svg
+			></span
+		>
+		<span class="text-lg font-bold">PaperNotes</span>
+	</a>
+	<div class="mt-12">
+		<p class="text-sm font-semibold text-muted">Welcome back</p>
+		<h1 class="mt-2 text-3xl font-bold">Log in to PaperNotes</h1>
+		<form class="mt-8 space-y-5" id="login-form">
+			<div>
+				<label class="block text-sm font-semibold" for="email">Email</label><input
+					class="mt-2 h-12 w-full rounded-lg border border-line bg-paper px-4 text-base transition outline-none placeholder:text-[#8a8b8d] focus:border-[#8b8e8a] focus:ring-2 focus:ring-[#1e2022]/10"
+					id="email"
+					name="email"
+					type="email"
+					placeholder="you@example.com"
+					autocomplete="email"
+					required
+				/>
+			</div>
+			<div>
+				<label class="block text-sm font-semibold" for="password">Password</label><input
+					class="mt-2 h-12 w-full rounded-lg border border-line bg-paper px-4 text-base transition outline-none placeholder:text-[#8a8b8d] focus:border-[#8b8e8a] focus:ring-2 focus:ring-[#1e2022]/10"
+					id="password"
+					name="password"
+					type="password"
+					placeholder="Your password"
+					autocomplete="current-password"
+					required
+				/>
+			</div>
+			<button
+				class="inline-flex h-12 w-full items-center justify-center rounded-lg bg-[#2f312f] px-5 text-sm font-bold text-white transition hover:bg-[#1e2022] active:scale-[0.98]"
+				type="submit">Log in</button
+			>
+		</form>
+		<p class="mt-7 text-center text-sm text-muted">
+			New to PaperNotes? <a
+				class="font-bold text-ink underline decoration-line underline-offset-4"
+				href="/signup">Create an account</a
+			>
+		</p>
+	</div>
+</main>

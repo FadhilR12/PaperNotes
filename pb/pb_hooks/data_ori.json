@@ -1,0 +1,73 @@
+{
+	"user": [
+		{
+			"user_id": "1",
+			"username": "fadhil",
+			"email": "fadhil@example.com",
+			"password": "percobaan1"
+		},
+		{
+			"user_id": "2",
+			"username": "andrew",
+			"email": "andrew@example.com",
+			"password": "percobaan2"
+		},
+		{
+			"user_id": "3",
+			"username": "sarah",
+			"email": "sarah@example.com",
+			"password": "percobaan3"
+		}
+	],
+	"note": [
+		{
+			"note_id": "1",
+			"user_id": "1",
+			"title": "Belajar SvelteKit",
+			"desc": "Pelajari routing, load function, form actions, dan API endpoint di SvelteKit.",
+			"created_at": 1757901600
+		},
+		{
+			"note_id": "2",
+			"user_id": "1",
+			"title": "Tugas Basis Data",
+			"desc": "Menyelesaikan ERD dan implementasi database untuk aplikasi notes.",
+			"created_at": 1757934000
+		},
+		{
+			"note_id": "3",
+			"user_id": "1",
+			"title": "Ide Project",
+			"desc": "Membuat aplikasi notes sederhana seperti Google Keep menggunakan SvelteKit.",
+			"created_at": 1757944800
+		},
+		{
+			"note_id": "4",
+			"user_id": "2",
+			"title": "Meeting",
+			"desc": "Meeting dengan tim pada hari Jumat pukul 10:00.",
+			"created_at": 1757948400
+		},
+		{
+			"note_id": "5",
+			"user_id": "2",
+			"title": "Belanja Mingguan",
+			"desc": "Beli susu, telur, roti, kopi, dan buah.",
+			"created_at": 1757923200
+		},
+		{
+			"note_id": "6",
+			"user_id": "3",
+			"title": "Buku yang Ingin Dibaca",
+			"desc": "Clean Code, The Pragmatic Programmer, dan Designing Data-Intensive Applications.",
+			"created_at": 1757952000
+		},
+		{
+			"note_id": "7",
+			"user_id": "3",
+			"title": "Catatan Kuliah",
+			"desc": "Review materi database normalization, indexing, transaction, dan relational database.",
+			"created_at": 1757962800
+		}
+	]
+}

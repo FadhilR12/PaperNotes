@@ -1,9 +1,11 @@
 <script lang="ts">
 	import type { Note } from '$lib/repository/type.js';
+	import NoteDialog from './note_dialog.svelte';
 	let { notes } = $props();
 
 	let dialogElement: HTMLDialogElement;
 	let searchQuery = $state('');
+	let noteDialog: NoteDialog;
 
 	let filteredData: Note[] = $derived(
 		notes.filter((val: Note) => {
@@ -57,6 +59,10 @@
 		<div class="mt-4 max-h-80 space-y-2 overflow-y-auto" id="search-results" aria-live="polite">
 			{#each filteredData as data}
 				<button
+					onclick={() => {
+						close();
+						noteDialog.open(data);
+					}}
 					class="block w-full rounded-lg px-3 py-3 text-left transition hover:bg-soft"
 					type="button"
 					><span class="block text-sm font-bold">{data.title}</span><span
@@ -67,3 +73,5 @@
 		</div>
 	</div>
 </dialog>
+
+<NoteDialog bind:this={noteDialog} />

@@ -102,7 +102,7 @@
 		<p class="mt-7 text-center text-sm text-muted">
 			Already have an account? <a
 				class="font-bold text-ink underline decoration-line underline-offset-4"
-				href="login.html">Log in</a
+				href="/login">Log in</a
 			>
 		</p>
 	</div>

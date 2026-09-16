@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import Navbar from '$lib/components/navbar.svelte';
 	import NoteDialog from '$lib/components/note_dialog.svelte';
 	import { getTimeLabel } from '$lib/repository/utils.js';
@@ -6,7 +7,7 @@
 	let isActive: boolean = $state(false);
 	let noteDialog: NoteDialog;
 	let { data } = $props();
-	let notes = $state(data.note);
+	let notes = $derived(data.note);
 </script>
 
 <Navbar {notes} />
@@ -22,6 +23,23 @@
 		</h1>
 		<!-- svelte-ignore a11y_role_supports_aria_props_implicit -->
 		<form
+			method="POST"
+			action="?/create"
+			use:enhance={({ formData, cancel }) => {
+				const title = formData.get('title')?.toString().trim();
+				const desc = formData.get('desc')?.toString().trim();
+
+				if (!title && !desc) {
+					cancel();
+					isActive = false;
+					return;
+				}
+
+				return async ({ update }) => {
+					isActive = false;
+					update();
+				};
+			}}
 			class="mt-7 rounded-2xl border border-line bg-paper shadow-paper transition-shadow focus-within:shadow-lift {isActive
 				? 'p-5 sm:p-6'
 				: 'p-3'}"
@@ -33,6 +51,7 @@
 				<input
 					class="w-full border-0 bg-transparent text-xl font-bold outline-none placeholder:text-[#9a9b9d] sm:text-2xl"
 					id="note-title"
+					name="title"
 					type="text"
 					placeholder="Title"
 				/>
@@ -54,10 +73,11 @@
 				<textarea
 					class="min-h-44 w-full resize-y border-0 bg-transparent text-base leading-7 outline-none placeholder:text-[#75777a] sm:min-h-52 sm:text-lg sm:leading-8"
 					id="note-content"
+					name="desc"
 					placeholder="Start writing..."></textarea>
 			</div>
 			<div
-				class="mt-5 items-center justify-end border-t border-line pt-4"
+				class="mt-5 flex items-center justify-end border-t border-line pt-4"
 				class:hidden={!isActive}
 				id="composer-actions"
 			>
@@ -65,7 +85,7 @@
 					onclick={() => (isActive = false)}
 					class="inline-flex h-10 items-center rounded-lg px-4 text-sm font-bold text-muted transition hover:bg-soft hover:text-ink"
 					id="close-composer"
-					type="button">Close</button
+					type="submit">Close</button
 				>
 			</div>
 		</form>

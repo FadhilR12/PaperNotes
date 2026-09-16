@@ -4,19 +4,19 @@
 			"user_id": "1",
 			"username": "fadhil",
 			"email": "fadhil@example.com",
-			"password": "5f4dcc3b5aa765d61d8327deb882cf99"
+			"password": "percobaan1"
 		},
 		{
 			"user_id": "2",
 			"username": "andrew",
 			"email": "andrew@example.com",
-			"password": "e10adc3949ba59abbe56e057f20f883e"
+			"password": "percobaan2"
 		},
 		{
 			"user_id": "3",
 			"username": "sarah",
 			"email": "sarah@example.com",
-			"password": "25d55ad283aa400af464c76d713c07ad"
+			"password": "percobaan3"
 		}
 	],
 	"note": [
