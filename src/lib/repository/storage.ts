@@ -4,3 +4,4 @@ import { note } from './data';
 export async function getAllNotes(): Promise<Note[]> {
 	return note;
 }
+

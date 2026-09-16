@@ -3,6 +3,9 @@
 
 	let searchDialog: SearchDialog;
 	let menuOpen: boolean = $state(false);
+
+	let { notes } = $props();
+
 	function handleOpen() {
 		menuOpen = true;
 		document.body.addEventListener('click', handleClose);
@@ -117,4 +120,4 @@
 	</div>
 </header>
 
-<SearchDialog bind:this={searchDialog}></SearchDialog>
+<SearchDialog bind:this={searchDialog} {notes}></SearchDialog>

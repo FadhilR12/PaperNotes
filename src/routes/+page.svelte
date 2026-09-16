@@ -1,13 +1,15 @@
 <script lang="ts">
 	import Navbar from '$lib/components/navbar.svelte';
 	import NoteDialog from '$lib/components/note_dialog.svelte';
+	import { getTimeLabel } from '$lib/repository/utils.js';
 
 	let isActive: boolean = $state(false);
 	let noteDialog: NoteDialog;
 	let { data } = $props();
+	let notes = $state(data.note);
 </script>
 
-<Navbar></Navbar>
+<Navbar {notes} />
 
 <main class="mx-auto max-w-4xl px-5 pt-10 pb-16 sm:px-8 sm:pt-14">
 	<section aria-labelledby="capture-title">
@@ -76,24 +78,22 @@
 				<h2 class="mt-1 text-2xl font-bold" id="notes-title">Your notes</h2>
 			</div>
 			<span class="text-sm font-medium text-muted"
-				><span id="note-count">{data.note.length}</span> notes</span
+				><span id="note-count">{notes.length}</span> notes</span
 			>
 		</div>
 		<div class="grid gap-3 sm:grid-cols-2 sm:gap-4" id="notes-list">
-			{#each data.note as note}
+			{#each notes as note}
 				<button
-					onclick={() => noteDialog.open()}
-					class="group flex w-full cursor-pointer flex-col rounded-2xl border border-line bg-paper p-4 text-left shadow-paper transition hover:-translate-y-0.5 hover:shadow-lift sm:min-h-52 sm:p-5"
+					onclick={() => noteDialog.open(note)}
+					class="group flex w-full cursor-pointer flex-col rounded-2xl border border-line bg-paper p-4 text-left shadow-paper"
 					type="button"
-					data-note
 				>
 					<h3 class="text-base leading-snug font-bold sm:text-lg">{note.title}</h3>
 					<p class="mt-2.5 line-clamp-2 text-sm leading-6 text-muted sm:mt-3 sm:line-clamp-3">
 						{note.desc}
 					</p>
-					<time
-						class="mt-5 text-xs font-semibold text-[#75777a] sm:mt-auto sm:pt-5"
-						datetime="2026-09-14">Yesterday</time
+					<time class="mt-5 text-xs font-semibold text-[#75777a] sm:mt-auto sm:pt-5"
+						>{getTimeLabel(note.created_at)}</time
 					>
 				</button>
 			{/each}
@@ -102,4 +102,4 @@
 	</section>
 </main>
 
-<NoteDialog bind:this={noteDialog}></NoteDialog>
+<NoteDialog bind:this={noteDialog} />

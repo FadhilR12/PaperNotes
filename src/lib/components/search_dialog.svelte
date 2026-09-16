@@ -1,11 +1,27 @@
 <script lang="ts">
+	import type { Note } from '$lib/repository/type.js';
+	let { notes } = $props();
+
 	let dialogElement: HTMLDialogElement;
+	let searchQuery = $state('');
+
+	let filteredData: Note[] = $derived(
+		notes.filter((val: Note) => {
+			let include = true;
+			if (searchQuery.length > 0) {
+				const searchData = [val.title, val.desc].join(' ').toLowerCase();
+				include = include && searchData.includes(searchQuery.toLowerCase());
+			}
+			return include;
+		})
+	);
 
 	export function open() {
 		dialogElement.showModal();
 	}
 
 	export function close() {
+		searchQuery = '';
 		dialogElement.close();
 	}
 </script>
@@ -30,6 +46,7 @@
 		<label class="mt-5 flex h-12 items-center rounded-lg bg-soft px-4" for="note-search"
 			><span class="material-symbols-outlined text-xl text-muted" aria-hidden="true">search</span
 			><input
+				bind:value={searchQuery}
 				class="min-w-0 flex-1 bg-transparent px-3 text-base outline-none placeholder:text-[#75777a]"
 				id="note-search"
 				type="search"
@@ -37,10 +54,16 @@
 				autocomplete="off"
 			/></label
 		>
-		<div
-			class="mt-4 max-h-80 space-y-2 overflow-y-auto"
-			id="search-results"
-			aria-live="polite"
-		></div>
+		<div class="mt-4 max-h-80 space-y-2 overflow-y-auto" id="search-results" aria-live="polite">
+			{#each filteredData as data}
+				<button
+					class="block w-full rounded-lg px-3 py-3 text-left transition hover:bg-soft"
+					type="button"
+					><span class="block text-sm font-bold">{data.title}</span><span
+						class="mt-1 block truncate text-sm text-muted">{data.desc}</span
+					></button
+				>
+			{/each}
+		</div>
 	</div>
 </dialog>
