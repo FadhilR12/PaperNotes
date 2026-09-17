@@ -7,9 +7,13 @@ export type Note = {
 };
 
 export type User = {
-	id: string;
 	email: string;
 	name: string;
 	password: string;
 	passwordConfirm: string;
+};
+
+export type AuthenticateInput = {
+	email: string;
+	password: string;
 };

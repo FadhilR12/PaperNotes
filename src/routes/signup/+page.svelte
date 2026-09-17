@@ -1,3 +1,9 @@
+<script lang="ts">
+	import { enhance } from '$app/forms';
+
+	let { form } = $props();
+</script>
+
 <main class="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-6 py-12 sm:px-8">
 	<a
 		class="inline-flex items-center gap-2.5 self-start"
@@ -41,7 +47,10 @@
 	<div class="mt-12">
 		<p class="text-sm font-semibold text-muted">Start writing</p>
 		<h1 class="mt-2 text-3xl font-bold">Create your account</h1>
-		<form class="mt-8 space-y-5" id="signup-form">
+		{#if form?.message}
+			<p class="mt-1.5 text-sm font-medium text-[#ba1a1a]">{form.message}</p>
+		{/if}
+		<form method="POST" action="?/create" use:enhance class="mt-8 space-y-5" id="signup-form">
 			<div>
 				<label class="block text-sm font-semibold" for="name">Your name</label><input
 					class="mt-2 h-12 w-full rounded-lg border border-line bg-paper px-4 text-base transition outline-none placeholder:text-[#8a8b8d] focus:border-[#8b8e8a] focus:ring-2 focus:ring-[#1e2022]/10"
@@ -51,6 +60,7 @@
 					placeholder="How should we call you?"
 					autocomplete="name"
 					required
+					value={form?.data?.name ?? ''}
 				/>
 			</div>
 			<div>
@@ -62,6 +72,7 @@
 					placeholder="you@example.com"
 					autocomplete="email"
 					required
+					value={form?.data?.email ?? ''}
 				/>
 			</div>
 			<div>
@@ -78,7 +89,7 @@
 			</div>
 			<label class="flex cursor-pointer items-start gap-3 text-sm leading-5 text-muted"
 				><input
-					class="mt-0.5 h-4 w-4 rounded border-line text-[#2f312f] focus:ring-[#1e2022]/20"
+					class="mt-0.5 h-4 w-4 cursor-pointer rounded border-line text-[#2f312f] focus:ring-[#1e2022]/20"
 					name="terms"
 					type="checkbox"
 					required
@@ -95,7 +106,7 @@
 				></label
 			>
 			<button
-				class="inline-flex h-12 w-full items-center justify-center rounded-lg bg-[#2f312f] px-5 text-sm font-bold text-white transition hover:bg-[#1e2022] active:scale-[0.98]"
+				class="inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-lg bg-[#2f312f] px-5 text-sm font-bold text-white transition hover:bg-[#1e2022] active:scale-[0.98]"
 				type="submit">Create account</button
 			>
 		</form>

@@ -1,3 +1,9 @@
+<script lang="ts">
+	import { enhance } from '$app/forms';
+
+	let { form } = $props();
+</script>
+
 <main class="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-6 py-12 sm:px-8">
 	<a
 		class="inline-flex items-center gap-2.5 self-start"
@@ -41,7 +47,27 @@
 	<div class="mt-12">
 		<p class="text-sm font-semibold text-muted">Welcome back</p>
 		<h1 class="mt-2 text-3xl font-bold">Log in to PaperNotes</h1>
-		<form class="mt-8 space-y-5" id="login-form">
+		{#if form?.errors}
+			<p
+				class="mt-3 rounded-lg border border-[#ba1a1a]/20 bg-[#ffdad6] p-3 text-sm font-medium text-[#ba1a1a]"
+			>
+				{form.errors}
+			</p>
+		{/if}
+		<form
+			method="POST"
+			use:enhance={() => {
+				return async ({ result, update }) => {
+					if (result.type === 'failure' || result.type === 'error') {
+						await update({ reset: false });
+					} else {
+						await update();
+					}
+				};
+			}}
+			class="mt-8 space-y-5"
+			id="login-form"
+		>
 			<div>
 				<label class="block text-sm font-semibold" for="email">Email</label><input
 					class="mt-2 h-12 w-full rounded-lg border border-line bg-paper px-4 text-base transition outline-none placeholder:text-[#8a8b8d] focus:border-[#8b8e8a] focus:ring-2 focus:ring-[#1e2022]/10"
@@ -51,6 +77,7 @@
 					placeholder="you@example.com"
 					autocomplete="email"
 					required
+					value={form?.email ?? ''}
 				/>
 			</div>
 			<div>
