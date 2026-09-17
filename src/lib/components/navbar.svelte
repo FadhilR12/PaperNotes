@@ -1,11 +1,16 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
 	import SearchDialog from './search_dialog.svelte';
+	import { getInitials } from '$lib/repository/utils.js';
+	import type { Note, User } from '$lib/repository/type.js';
 
 	let searchDialog: SearchDialog;
 	let menuOpen: boolean = $state(false);
 
-	let { notes } = $props();
+	let { data } = $props();
+	let notes: Note = $derived(data.note);
+	let user: User = $derived(data.user);
 
 	function handleOpen() {
 		menuOpen = true;
@@ -79,7 +84,7 @@
 					id="account-toggle"
 					type="button"
 					aria-label="Open account menu for Riandy N."
-					aria-expanded="false">RN</button
+					aria-expanded="false">{getInitials(user.name)}</button
 				>
 				<div
 					class="absolute top-full right-0 z-20 mt-3 hidden w-80 rounded-2xl border border-line bg-paper p-3 shadow-lift"
@@ -90,10 +95,10 @@
 					<div class="flex items-center gap-3 px-2 py-2">
 						<span
 							class="flex h-12 w-12 items-center justify-center rounded-full bg-soft text-sm font-bold"
-							>RN</span
+							>{getInitials(user.name)}</span
 						><span
-							><span class="block text-sm font-bold">Riandy N.</span><span
-								class="mt-0.5 block text-xs text-muted">riandy@example.com</span
+							><span class="block text-sm font-bold">{user.name}</span><span
+								class="mt-0.5 block text-xs text-muted">{user.email}</span
 							></span
 						>
 					</div>
@@ -108,16 +113,16 @@
 						>
 					</div>
 					<div class="my-2 border-t border-line"></div>
-					<a href={resolve('/logout')}>
+					<form method="POST" action={resolve('/logout')} use:enhance>
 						<button
 							class="flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-sm font-semibold text-[#ba1a1a] transition hover:bg-[#ffdad6]"
 							id="logout-button"
-							type="button"
+							type="submit"
 							role="menuitem"
 							><span class="material-symbols-outlined text-xl" aria-hidden="true">logout</span>Log
 							out</button
 						>
-					</a>
+					</form>
 				</div>
 			</div>
 		</div>

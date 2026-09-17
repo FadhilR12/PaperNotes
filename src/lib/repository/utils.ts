@@ -11,3 +11,13 @@ export function getTimeLabel(createdAt: string): string {
 
 	return days === 0 ? 'Just now' : 'Yesterday';
 }
+
+export function getInitials(name: string) {
+	if (!name) return 'U';
+	return name
+		.split(' ')
+		.map((n) => n[0])
+		.join('')
+		.substring(0, 2)
+		.toUpperCase();
+}

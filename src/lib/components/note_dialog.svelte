@@ -1,5 +1,7 @@
+<!-- BUG: SETELAH CLOSE NOTE PAGE AKAN RELOAD SEHINGGA MELAKUKAN CLOSE KE NOTE YANG SEDANG DIBUKA -->
+
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
 	import type { Note } from '$lib/repository/type.js';
 
 	let dialogElement: HTMLDialogElement;
@@ -15,6 +17,29 @@
 		dialogElement.close();
 		selectedNote = null;
 	}
+
+	async function handleSubmit(e: SubmitEvent) {
+		e.preventDefault();
+		const form = e.target as HTMLFormElement;
+		const data = new FormData(form);
+		const submittingId = selectedNote?.id;
+
+		const res = await fetch(form.action, {
+			method: 'POST',
+			body: data,
+			headers: { 'x-sveltekit-action': 'true' }
+		});
+
+		if (res.ok) {
+			const result = await res.json();
+			if (result.type === 'success') {
+				await invalidateAll();
+				if (selectedNote?.id === submittingId) {
+					close();
+				}
+			}
+		}
+	}
 </script>
 
 <dialog
@@ -24,17 +49,7 @@
 >
 	{#if selectedNote}
 		<div class="p-5 sm:p-6">
-			<form
-				id="update-note-form"
-				method="POST"
-				action="?/update"
-				use:enhance={() => {
-					return async ({ update }) => {
-						close();
-						update();
-					};
-				}}
-			>
+			<form id="update-note-form" method="POST" action="?/update" onsubmit={handleSubmit}>
 				<input type="hidden" name="id" value={selectedNote.id} />
 				<label class="sr-only" for="modal-note-title">Note title</label><input
 					class="w-full border-0 bg-transparent text-xl font-bold outline-none placeholder:text-[#9a9b9d] sm:text-2xl"
@@ -53,16 +68,7 @@
 					placeholder="Start writing..."></textarea>
 			</form>
 			<div class="mt-5 flex items-center justify-between border-t border-line pt-4">
-				<form
-					method="POST"
-					action="?/delete"
-					use:enhance={() => {
-						return async ({ update }) => {
-							close();
-							update();
-						};
-					}}
-				>
+				<form method="POST" action="?/delete" onsubmit={handleSubmit}>
 					<input type="hidden" name="id" value={selectedNote.id} />
 					<button
 						class="grid h-10 w-10 cursor-pointer place-items-center rounded-full text-[#ba1a1a] transition hover:bg-[#ffdad6]"

@@ -10,7 +10,7 @@
 	let notes = $derived(data.note);
 </script>
 
-<Navbar {notes} />
+<Navbar {data} />
 
 <main class="mx-auto max-w-4xl px-5 pt-10 pb-16 sm:px-8 sm:pt-14">
 	<section aria-labelledby="capture-title">

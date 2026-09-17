@@ -47,6 +47,7 @@
 	<div class="mt-12">
 		<p class="text-sm font-semibold text-muted">Welcome back</p>
 		<h1 class="mt-2 text-3xl font-bold">Log in to PaperNotes</h1>
+		<!-- BUG 2: form error not show -->
 		{#if form?.errors}
 			<p
 				class="mt-3 rounded-lg border border-[#ba1a1a]/20 bg-[#ffdad6] p-3 text-sm font-medium text-[#ba1a1a]"

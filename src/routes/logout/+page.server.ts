@@ -1,8 +1,10 @@
 import { clearAuth } from '$lib/repository/auth.js';
 import { redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from '../$types.js';
+import type { Actions } from './$types.js';
 
-export const load: PageServerLoad = async ({ cookies, locals }) => {
-	clearAuth(cookies, locals.pb);
-	redirect(303, '/login');
+export const actions: Actions = {
+	default: async ({ cookies, locals }) => {
+		clearAuth(cookies, locals.pb);
+		redirect(303, '/login');
+	}
 };
