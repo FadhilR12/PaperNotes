@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import SearchDialog from './search_dialog.svelte';
 
 	let searchDialog: SearchDialog;
@@ -107,13 +108,16 @@
 						>
 					</div>
 					<div class="my-2 border-t border-line"></div>
-					<button
-						class="flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-sm font-semibold text-[#ba1a1a] transition hover:bg-[#ffdad6]"
-						id="logout-button"
-						type="button"
-						role="menuitem"
-						><span class="material-symbols-outlined text-xl" aria-hidden="true">logout</span>Log out</button
-					>
+					<a href={resolve('/logout')}>
+						<button
+							class="flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-sm font-semibold text-[#ba1a1a] transition hover:bg-[#ffdad6]"
+							id="logout-button"
+							type="button"
+							role="menuitem"
+							><span class="material-symbols-outlined text-xl" aria-hidden="true">logout</span>Log
+							out</button
+						>
+					</a>
 				</div>
 			</div>
 		</div>
