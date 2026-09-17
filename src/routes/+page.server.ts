@@ -2,22 +2,18 @@ import { getAllNotes, createNote, deleteNote, updateNote } from '$lib/repository
 import type { Note } from '$lib/repository/type.js';
 import type { PageServerLoad, Actions } from './$types.js';
 
-// export async function load() {
-// 	return {
-// 		note: await getAllNotes()
-// 	};
-// }
-
-// src/routes/+page.server.ts
-
 export const load: PageServerLoad = async ({ locals }) => {
 	return {
-		note: await getAllNotes(locals.pb)
+		note: locals.user ? await getAllNotes(locals.pb, locals.user.id) : []
 	};
 };
 
 export const actions: Actions = {
 	create: async ({ request, locals }) => {
+		if (!locals.user) {
+			return { success: false, message: 'Harap login terlebih dahulu' };
+		}
+
 		const formData = await request.formData();
 
 		let title = (formData.get('title') as string)?.trim() || '';
@@ -35,23 +31,28 @@ export const actions: Actions = {
 			desc = 'A thought captured just now.';
 		}
 
-		const isSuccess = await createNote(locals.pb, { title, desc } as Note);
+		const isSuccess = await createNote(locals.pb, locals.user.id, { title, desc } as Note);
+
 		if (!isSuccess) return { success: false, message: 'Gagal menyimpan' };
 
 		return { success: true };
 	},
+
 	delete: async ({ request, locals }) => {
 		const formData = await request.formData();
 		const id = formData.get('id') as string;
+
 		if (!id) {
 			return { success: false, message: 'ID tidak ditemukan' };
 		}
+
 		const isSuccess = await deleteNote(locals.pb, id);
 
 		if (!isSuccess) return { success: false, message: 'Gagal menghapus' };
 
 		return { success: true };
 	},
+
 	update: async ({ request, locals }) => {
 		const formData = await request.formData();
 

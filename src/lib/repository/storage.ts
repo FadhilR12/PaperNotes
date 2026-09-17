@@ -1,14 +1,10 @@
 import type { Note } from './type.ts';
-// import { note } from './data';
 import PocketBase from 'pocketbase';
 
-// export async function getAllNotes(): Promise<Note[]> {
-// 	return note;
-// }
-
-export async function getAllNotes(pb: PocketBase): Promise<Note[]> {
+export async function getAllNotes(pb: PocketBase, userId: string): Promise<Note[]> {
 	try {
 		const records = await pb.collection('notes').getFullList({
+			filter: `user = "${userId}"`,
 			sort: '-created'
 		});
 
@@ -22,17 +18,16 @@ export async function getAllNotes(pb: PocketBase): Promise<Note[]> {
 		return notes;
 	} catch (error) {
 		console.error('Gagal mengambil data notes:', error);
-
 		return [];
 	}
 }
 
-export async function createNote(pb: PocketBase, form: Note) {
+export async function createNote(pb: PocketBase, userId: string, form: Note) {
 	try {
 		const record = await pb.collection('notes').create({
 			title: form.title,
-			desc: form.desc
-			// relation: pb.authStore.model?.id // Buka komentar ini nanti setelah fitur login selesai
+			desc: form.desc,
+			user: userId
 		});
 		return true;
 	} catch (error) {
@@ -56,8 +51,8 @@ export async function updateNote(pb: PocketBase, id: string, form: Note) {
 		await pb.collection('notes').update(id, {
 			title: form.title,
 			desc: form.desc
-			// relation: pb.authStore.model?.id // Buka komentar ini nanti setelah fitur login selesai
 		});
+		return true;
 	} catch (error) {
 		console.error('Gagal memperbarui catatan:', error);
 		return false;
