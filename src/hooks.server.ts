@@ -11,7 +11,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.pb = pb;
 	const path = event.url.pathname;
 	const isDashboardRoute = path === '/';
-	const isAuthRoute = path === '/login' || path === '/signup' || path === '/register';
+	const isAuthRoute =
+		path === '/login' || path === '/signup' || path === '/privacy' || path === '/terms';
 
 	if (pb.authStore.isValid) {
 		try {

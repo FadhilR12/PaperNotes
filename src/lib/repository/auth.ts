@@ -5,7 +5,7 @@ import { dev } from '$app/environment';
 
 const AUTH_COOKIE = 'pb_auth';
 
-export async function createUser(pb: PocketBase, form: User) {
+export async function createUser(pb: PocketBase, cookies: Cookies, form: User) {
 	try {
 		await pb.collection('users').create({
 			email: form.email,
@@ -14,6 +14,9 @@ export async function createUser(pb: PocketBase, form: User) {
 			password: form.password,
 			passwordConfirm: form.passwordConfirm
 		});
+		await pb.collection('users').authWithPassword(form.email, form.password);
+		saveAuth(cookies, pb);
+
 		return true;
 	} catch (error) {
 		console.error('Gagal membuat user:', error);

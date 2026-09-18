@@ -4,20 +4,20 @@ import type { Actions } from './$types.js';
 import { fail, redirect } from '@sveltejs/kit';
 
 export const actions: Actions = {
-	create: async ({ request, locals }) => {
+	create: async ({ request, locals, cookies }) => {
 		const formData = await request.formData();
 		let name = (formData.get('name') as string)?.trim() || '';
 		let email = (formData.get('email') as string)?.trim() || '';
 		let password = (formData.get('password') as string)?.trim() || '';
 
 		const newUser: User = {
-			name: name,	
+			name: name,
 			email: email,
 			password: password,
 			passwordConfirm: password
 		};
 
-		const isSuccess = await createUser(locals.pb, newUser);
+		const isSuccess = await createUser(locals.pb, cookies, newUser);
 
 		if (!isSuccess) {
 			return fail(500, {
@@ -26,6 +26,6 @@ export const actions: Actions = {
 			});
 		}
 
-		throw redirect(303, '/login');
+		throw redirect(303, '/');
 	}
 };
