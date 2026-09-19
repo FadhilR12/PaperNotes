@@ -33,7 +33,7 @@ export const actions: Actions = {
 
 		const isSuccess = await createNote(locals.pb, locals.user.id, { title, desc } as Note);
 
-		if (!isSuccess) return { success: false, message: 'Gagal menyimpan' };
+		if (!isSuccess.success) return { success: false, message: isSuccess.message };
 
 		return { success: true };
 	},
@@ -48,7 +48,7 @@ export const actions: Actions = {
 
 		const isSuccess = await deleteNote(locals.pb, id);
 
-		if (!isSuccess) return { success: false, message: 'Gagal menghapus' };
+		if (!isSuccess.success) return { success: false, message: isSuccess.message };
 
 		return { success: true };
 	},
@@ -68,7 +68,7 @@ export const actions: Actions = {
 
 		const isSuccess = await updateNote(locals.pb, id, { title, desc } as Note);
 
-		if (!isSuccess) return { success: false, message: 'Gagal mengupdate catatan' };
+		if (!isSuccess.success) return { success: false, message: isSuccess.message };
 
 		return { success: true };
 	}

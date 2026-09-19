@@ -1,5 +1,16 @@
 import type { Note } from './type.ts';
-import PocketBase from 'pocketbase';
+import PocketBase, { ClientResponseError } from 'pocketbase';
+
+function handleServerError(error: unknown): string {
+	console.error('Database Error:', error);
+	if (error instanceof ClientResponseError && error.status === 0) {
+		return 'Gagal terhubung ke database. Pastikan server aktif.';
+	}
+	if (error instanceof TypeError && error.message.includes('fetch')) {
+		return 'Koneksi ke server terputus.';
+	}
+	return 'Terjadi kesalahan sistem yang tidak terduga.';
+}
 
 export async function getAllNotes(pb: PocketBase, userId: string): Promise<Note[]> {
 	try {
@@ -29,20 +40,20 @@ export async function createNote(pb: PocketBase, userId: string, form: Note) {
 			desc: form.desc,
 			user: userId
 		});
-		return true;
+		return { success: true };
 	} catch (error) {
 		console.error('Gagal membuat catatan baru:', error);
-		return false;
+		return { success: false, message: handleServerError(error) };
 	}
 }
 
 export async function deleteNote(pb: PocketBase, id: string) {
 	try {
 		await pb.collection('notes').delete(id);
-		return true;
+		return { success: true };
 	} catch (error) {
 		console.error(`Gagal menghapus catatan dengan ID ${id}:`, error);
-		return false;
+		return { success: false, message: handleServerError(error) };
 	}
 }
 
@@ -52,9 +63,9 @@ export async function updateNote(pb: PocketBase, id: string, form: Note) {
 			title: form.title,
 			desc: form.desc
 		});
-		return true;
+		return { success: true };
 	} catch (error) {
 		console.error('Gagal memperbarui catatan:', error);
-		return false;
+		return { success: false, message: handleServerError(error) };
 	}
 }

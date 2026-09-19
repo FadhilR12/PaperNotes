@@ -6,7 +6,7 @@
 
 	let isActive: boolean = $state(false);
 	let noteDialog: NoteDialog;
-	let { data } = $props();
+	let { data, form } = $props();
 	let notes = $derived(data.note);
 </script>
 
@@ -22,6 +22,15 @@
 			Write your idea before it slips away.
 		</h1>
 		<!-- svelte-ignore a11y_role_supports_aria_props_implicit -->
+		{#if form?.message}
+			<div
+				class="mt-6 flex items-center gap-3 rounded-lg border border-[#ba1a1a]/20 bg-[#ffdad6] p-4 text-sm font-medium text-[#ba1a1a]"
+				role="alert"
+			>
+				<span class="material-symbols-outlined" aria-hidden="true">error</span>
+				<p>{form.message}</p>
+			</div>
+		{/if}
 		<form
 			method="POST"
 			action="?/create"
