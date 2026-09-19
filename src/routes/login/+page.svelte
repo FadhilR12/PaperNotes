@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import type { ActionData } from './$types.js';
 
-	let { form } = $props();
+	let { form }: { form: ActionData } = $props();
 </script>
 
 <main class="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-6 py-12 sm:px-8">
@@ -48,11 +49,9 @@
 		<p class="text-sm font-semibold text-muted">Welcome back</p>
 		<h1 class="mt-2 text-3xl font-bold">Log in to PaperNotes</h1>
 		<!-- BUG 2: form error not show -->
-		{#if form?.errors}
-			<p
-				class="mt-3 rounded-lg border border-[#ba1a1a]/20 bg-[#ffdad6] p-3 text-sm font-medium text-[#ba1a1a]"
-			>
-				{form.errors}
+		{#if form?.message}
+			<p class="mt-7 rounded-md bg-[#ba1a1a]/10 p-5 text-[16px] font-medium text-[#ba1a1a]">
+				{form.message}
 			</p>
 		{/if}
 		<form
@@ -70,26 +69,38 @@
 			id="login-form"
 		>
 			<div>
-				<label class="block text-sm font-semibold" for="email">Email</label><input
-					class="mt-2 h-12 w-full rounded-lg border border-line bg-paper px-4 text-base transition outline-none placeholder:text-[#8a8b8d] focus:border-[#8b8e8a] focus:ring-2 focus:ring-[#1e2022]/10"
+				<label
+					class="block text-sm font-semibold {form?.errors?.email
+						? 'text-[#ba1a1a]'
+						: 'text-black'}"
+					for="email">Email</label
+				><input
+					class="mt-2 h-12 w-full rounded-lg border {form?.errors?.email
+						? 'border-[#ba1a1a]'
+						: 'border-line'} bg-paper px-4 text-base transition outline-none placeholder:text-[#8a8b8d] focus:border-[#8b8e8a] focus:ring-2 focus:ring-[#1e2022]/10"
 					id="email"
 					name="email"
 					type="email"
 					placeholder="you@example.com"
 					autocomplete="email"
-					required
-					value={form?.email ?? ''}
+					value={form?.data.email ?? ''}
 				/>
 			</div>
 			<div>
-				<label class="block text-sm font-semibold" for="password">Password</label><input
-					class="mt-2 h-12 w-full rounded-lg border border-line bg-paper px-4 text-base transition outline-none placeholder:text-[#8a8b8d] focus:border-[#8b8e8a] focus:ring-2 focus:ring-[#1e2022]/10"
+				<label
+					class="block text-sm font-semibold {form?.errors?.password
+						? 'text-[#ba1a1a]'
+						: 'text-black'}"
+					for="password">Password</label
+				><input
+					class="mt-2 h-12 {form?.errors?.password
+						? 'border-[#ba1a1a]'
+						: 'border-line'} w-full rounded-lg border bg-paper px-4 text-base transition outline-none placeholder:text-[#8a8b8d] focus:border-[#8b8e8a] focus:ring-2 focus:ring-[#1e2022]/10"
 					id="password"
 					name="password"
 					type="password"
 					placeholder="Your password"
 					autocomplete="current-password"
-					required
 				/>
 			</div>
 			<button

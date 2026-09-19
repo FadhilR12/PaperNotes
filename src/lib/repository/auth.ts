@@ -1,11 +1,15 @@
 import PocketBase, { ClientResponseError } from 'pocketbase';
-import type { AuthenticateInput, User } from './type.ts';
+import type { AuthenticateInput, LoginOutput, User } from './type.ts';
 import type { Cookies } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 
 const AUTH_COOKIE = 'pb_auth';
 
-export async function createUser(pb: PocketBase, cookies: Cookies, form: User) {
+export async function createUser(
+	pb: PocketBase,
+	cookies: Cookies,
+	form: User
+): Promise<LoginOutput> {
 	try {
 		await pb.collection('users').create({
 			email: form.email,
@@ -17,10 +21,15 @@ export async function createUser(pb: PocketBase, cookies: Cookies, form: User) {
 		await pb.collection('users').authWithPassword(form.email, form.password);
 		saveAuth(cookies, pb);
 
-		return true;
-	} catch (error) {
-		console.error('Gagal membuat user:', error);
-		return false;
+		return {
+			success: true
+		};
+	} catch (e) {
+		return {
+			success: false,
+			reason: 'internal_server_error',
+			message: (e as Error).message
+		};
 	}
 }
 

@@ -1,19 +1,31 @@
 import { createUser } from '$lib/repository/auth.js';
 import type { User } from '$lib/repository/type.js';
+import { userSchema } from '$lib/validation/user.js';
 import type { Actions } from './$types.js';
 import { fail, redirect } from '@sveltejs/kit';
 
 export const actions: Actions = {
 	create: async ({ request, locals, cookies }) => {
 		const formData = await request.formData();
-		let name = (formData.get('name') as string)?.trim() || '';
-		let email = (formData.get('email') as string)?.trim() || '';
-		let password = (formData.get('password') as string)?.trim() || '';
+		const submittedValues = Object.fromEntries(formData);
+		const result = userSchema.safeParse(submittedValues);
+		if (!result.success) {
+			const firstNonTermsError = result.error.issues.find((e) => e.path[0] !== 'terms');
+			return fail(400, {
+				data: {
+					name: submittedValues.name?.toString() || '',
+					email: submittedValues.email?.toString() || ''
+				},
+				message: firstNonTermsError?.message,
+				errors: result.error.flatten().fieldErrors
+			});
+		}
+		const { name, email, password } = result.data;
 
 		const newUser: User = {
-			name: name,
-			email: email,
-			password: password,
+			name,
+			email,
+			password,
 			passwordConfirm: password
 		};
 
@@ -21,11 +33,11 @@ export const actions: Actions = {
 
 		if (!isSuccess) {
 			return fail(500, {
-				data: { name: name, email: email },
-				message: 'Gagal membuat akun. Email mungkin sudah terpakai.'
+				data: { name, email },
+				message: 'Failed to create an account. The email may already be in use.',
+				errors: undefined
 			});
 		}
-
 		throw redirect(303, '/');
 	}
 };

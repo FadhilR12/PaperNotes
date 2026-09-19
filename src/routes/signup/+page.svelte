@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import type { ActionData } from './$types.js';
 
-	let { form } = $props();
+	let { form }: { form: ActionData } = $props();
 </script>
 
 <main class="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-6 py-12 sm:px-8">
@@ -48,51 +49,70 @@
 		<p class="text-sm font-semibold text-muted">Start writing</p>
 		<h1 class="mt-2 text-3xl font-bold">Create your account</h1>
 		{#if form?.message}
-			<p class="mt-1.5 text-sm font-medium text-[#ba1a1a]">{form.message}</p>
+			<p class="mt-7 rounded-md bg-[#ba1a1a]/10 p-5 text-[16px] font-medium text-[#ba1a1a]">
+				{form.message}
+			</p>
 		{/if}
 		<form method="POST" action="?/create" use:enhance class="mt-8 space-y-5" id="signup-form">
 			<div>
-				<label class="block text-sm font-semibold" for="name">Your name</label><input
-					class="mt-2 h-12 w-full rounded-lg border border-line bg-paper px-4 text-base transition outline-none placeholder:text-[#8a8b8d] focus:border-[#8b8e8a] focus:ring-2 focus:ring-[#1e2022]/10"
+				<label
+					class="block text-sm font-semibold {form?.errors?.name ? 'text-[#ba1a1a]' : 'text-black'}"
+					for="name">Your name</label
+				><input
+					class="mt-2 h-12 w-full rounded-lg border {form?.errors?.name
+						? 'border-[#ba1a1a]'
+						: 'border-line'} bg-paper px-4 text-base transition outline-none placeholder:text-[#8a8b8d] focus:border-[#8b8e8a] focus:ring-2 focus:ring-[#1e2022]/10"
 					id="name"
 					name="name"
 					type="text"
 					placeholder="How should we call you?"
 					autocomplete="name"
-					required
 					value={form?.data?.name ?? ''}
 				/>
 			</div>
 			<div>
-				<label class="block text-sm font-semibold" for="email">Email</label><input
-					class="mt-2 h-12 w-full rounded-lg border border-line bg-paper px-4 text-base transition outline-none placeholder:text-[#8a8b8d] focus:border-[#8b8e8a] focus:ring-2 focus:ring-[#1e2022]/10"
+				<label
+					class="block text-sm font-semibold {form?.errors?.email
+						? 'text-[#ba1a1a]'
+						: 'text-black'}"
+					for="email">Email</label
+				><input
+					class="mt-2 h-12 w-full rounded-lg border {form?.errors?.email
+						? 'border-[#ba1a1a]'
+						: 'border-line'} bg-paper px-4 text-base transition outline-none placeholder:text-[#8a8b8d] focus:border-[#8b8e8a] focus:ring-2 focus:ring-[#1e2022]/10"
 					id="email"
 					name="email"
 					type="email"
 					placeholder="you@example.com"
 					autocomplete="email"
-					required
 					value={form?.data?.email ?? ''}
 				/>
 			</div>
 			<div>
-				<label class="block text-sm font-semibold" for="password">Password</label><input
-					class="mt-2 h-12 w-full rounded-lg border border-line bg-paper px-4 text-base transition outline-none placeholder:text-[#8a8b8d] focus:border-[#8b8e8a] focus:ring-2 focus:ring-[#1e2022]/10"
+				<label
+					class="block text-sm font-semibold {form?.errors?.password
+						? 'text-[#ba1a1a]'
+						: 'text-black'}"
+					for="password">Password</label
+				><input
+					class="mt-2 h-12 w-full rounded-lg border {form?.errors?.password
+						? 'border-[#ba1a1a]'
+						: 'border-line'} bg-paper px-4 text-base transition outline-none placeholder:text-[#8a8b8d] focus:border-[#8b8e8a] focus:ring-2 focus:ring-[#1e2022]/10"
 					id="password"
 					name="password"
 					type="password"
 					placeholder="At least 8 characters"
 					autocomplete="new-password"
-					minlength="8"
-					required
 				/>
 			</div>
+			{#if form?.errors?.terms}
+				<p class="mb-2 text-xs text-[#ba1a1a]">{form.errors.terms[0]}</p>
+			{/if}
 			<label class="flex cursor-pointer items-start gap-3 text-sm leading-5 text-muted"
 				><input
 					class="mt-0.5 h-4 w-4 cursor-pointer rounded border-line text-[#2f312f] focus:ring-[#1e2022]/20"
 					name="terms"
 					type="checkbox"
-					required
 				/><span
 					>I agree to the <a
 						class="font-semibold text-ink underline decoration-line underline-offset-4"

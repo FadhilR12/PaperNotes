@@ -17,3 +17,6 @@ export type AuthenticateInput = {
 	email: string;
 	password: string;
 };
+
+export type LoginOutput =
+	{ success: true } | { success: false; reason: 'internal_server_error'; message: string };
