@@ -3,13 +3,14 @@
 	import { resolve } from '$app/paths';
 	import SearchDialog from './search_dialog.svelte';
 	import { getInitials } from '$lib/repository/utils.js';
-	import type { Note, User } from '$lib/repository/type.js';
+	import type { Folder, Note, User } from '$lib/repository/type.js';
 
 	let searchDialog: SearchDialog;
 	let menuOpen: boolean = $state(false);
 
-	let { data } = $props();
-	let notes: Note = $derived(data.note);
+	let { data, noteDialog } = $props();
+	let notes: Note[] = $derived(data.note);
+	let folders: Folder[] = $derived(data.folders);
 	let user: User = $derived(data.user);
 
 	function handleOpen() {
@@ -129,4 +130,4 @@
 	</div>
 </header>
 
-<SearchDialog bind:this={searchDialog} {notes}></SearchDialog>
+<SearchDialog bind:this={searchDialog} {notes} {folders} {noteDialog}></SearchDialog>

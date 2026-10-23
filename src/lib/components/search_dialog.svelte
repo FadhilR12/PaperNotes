@@ -1,17 +1,22 @@
 <script lang="ts">
-	import type { Note } from '$lib/repository/type.js';
-	import NoteDialog from './note_dialog.svelte';
-	let { notes } = $props();
+	import type { Folder, Note } from '$lib/repository/type.js';
+	import type NoteDialog from './note_dialog.svelte';
+	let {
+		notes,
+		folders,
+		noteDialog
+	}: { notes: Note[]; folders: Folder[]; noteDialog: NoteDialog | undefined } = $props();
 
 	let dialogElement: HTMLDialogElement;
 	let searchQuery = $state('');
-	let noteDialog: NoteDialog;
 
 	let filteredData: Note[] = $derived(
 		notes.filter((val: Note) => {
 			let include = true;
 			if (searchQuery.length > 0) {
-				const searchData = [val.title, val.desc].join(' ').toLowerCase();
+				const searchData = [val.title, val.desc, ...val.tags.map((tag) => tag.name)]
+					.join(' ')
+					.toLowerCase();
 				include = include && searchData.includes(searchQuery.toLowerCase());
 			}
 			return include;
@@ -61,7 +66,7 @@
 				<button
 					onclick={() => {
 						close();
-						noteDialog.open(data);
+						noteDialog?.open(data, folders);
 					}}
 					class="block w-full rounded-lg px-3 py-3 text-left transition hover:bg-soft"
 					type="button"
@@ -70,8 +75,9 @@
 					></button
 				>
 			{/each}
+			{#if filteredData.length === 0}
+				<p class="px-3 py-6 text-center text-sm text-muted">No matching notes found.</p>
+			{/if}
 		</div>
 	</div>
 </dialog>
-
-<NoteDialog bind:this={noteDialog} />

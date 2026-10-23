@@ -1,9 +1,28 @@
 export type Note = {
 	id: string;
-	// user_id: string;
 	title: string;
 	desc: string;
-	created_at: Date;
+	created_at: string;
+	folder_id: string;
+	tags: Tag[];
+};
+
+export type Folder = {
+	id: string;
+	name: string;
+	created_at: string;
+};
+
+export type Tag = {
+	id: string;
+	name: string;
+};
+
+export type NoteVersion = {
+	id: string;
+	title: string;
+	desc: string;
+	created_at: string;
 };
 
 export type User = {
