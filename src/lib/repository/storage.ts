@@ -250,6 +250,21 @@ export async function createFolder(
 	return pb.collection('folders').create<FolderRecord>({ name: uniqueName, user: userId });
 }
 
+export async function createTag(pb: PocketBase, userId: string, name: string): Promise<TagRecord> {
+	const normalizedName = name.trim().toLowerCase();
+	if (!normalizedName || normalizedName.length > 50) {
+		throw new Error('Nama tag wajib diisi dan maksimal 50 karakter.');
+	}
+
+	const tags = await pb.collection('tags').getFullList<TagRecord>({
+		filter: ownerFilter(pb, userId)
+	});
+	const existing = tags.find((tag) => tag.name.toLowerCase() === normalizedName);
+	if (existing) return existing;
+
+	return pb.collection('tags').create<TagRecord>({ name: normalizedName, user: userId });
+}
+
 export async function renameFolder(
 	pb: PocketBase,
 	userId: string,

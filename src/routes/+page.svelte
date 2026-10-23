@@ -9,6 +9,23 @@
 	let isActive = $state(false);
 	let noteDialog = $state<NoteDialog | undefined>(undefined);
 	let { data, form } = $props();
+	let descriptionDraft = $state('');
+	let descriptionInput = $state<HTMLTextAreaElement | undefined>(undefined);
+	let suggestionDismissed = $state(false);
+	let activeCommandIndex = $state(0);
+	let commandQuery = $state<string | null>(null);
+	let commandSuggestionStart = $state(-1);
+	const quickCommands = [
+		{ command: '/newFolder', description: 'Create a folder and optionally save a note inside it' },
+		{ command: '/Folder', description: 'Save a note in an existing folder' },
+		{ command: '/tags', description: 'Create or reuse a tag for an optional note' }
+	];
+	let commandSuggestions = $derived.by(() => {
+		if (suggestionDismissed || commandQuery === null) return [];
+		return quickCommands.filter((item) =>
+			item.command.toLowerCase().startsWith(`/${commandQuery}`)
+		);
+	});
 	let selectedFolder = $state('');
 	let renamingFolderId = $state('');
 	let folderNameDraft = $state('');
@@ -28,6 +45,56 @@
 			return inFolder && hasTag;
 		})
 	);
+
+	function updateCommandSuggestions() {
+		const cursor = descriptionInput?.selectionStart ?? descriptionDraft.length;
+		const beforeCursor = descriptionDraft.slice(0, cursor);
+		const match = beforeCursor.match(/(?:^|\s)\/([A-Za-z]*)$/);
+		if (!match) {
+			commandQuery = null;
+			commandSuggestionStart = -1;
+			return;
+		}
+		commandQuery = match[1].toLowerCase();
+		commandSuggestionStart = cursor - match[1].length - 1;
+		suggestionDismissed = false;
+		activeCommandIndex = 0;
+	}
+
+	function selectQuickCommand(command: string) {
+		const cursor = descriptionInput?.selectionStart ?? descriptionDraft.length;
+		const replaceFrom = commandSuggestionStart >= 0 ? commandSuggestionStart : cursor;
+		descriptionDraft =
+			descriptionDraft.slice(0, replaceFrom) + `${command} ` + descriptionDraft.slice(cursor);
+		commandQuery = null;
+		commandSuggestionStart = -1;
+		suggestionDismissed = false;
+		tick().then(() => {
+			descriptionInput?.focus();
+			const nextCursor = replaceFrom + command.length + 1;
+			descriptionInput?.setSelectionRange(nextCursor, nextCursor);
+		});
+	}
+
+	function handleDescriptionKeydown(event: KeyboardEvent) {
+		if (!commandSuggestions.length) return;
+		if (event.key === 'ArrowDown') {
+			event.preventDefault();
+			activeCommandIndex = (activeCommandIndex + 1) % commandSuggestions.length;
+		} else if (event.key === 'ArrowUp') {
+			event.preventDefault();
+			activeCommandIndex =
+				(activeCommandIndex - 1 + commandSuggestions.length) % commandSuggestions.length;
+		} else if (event.key === 'Enter' && !event.shiftKey) {
+			event.preventDefault();
+			selectQuickCommand(commandSuggestions[activeCommandIndex]?.command ?? '/newFolder');
+		} else if (event.key === 'Escape') {
+			event.preventDefault();
+			suggestionDismissed = true;
+		} else if (event.key.length === 1 || event.key === 'Backspace' || event.key === 'Delete') {
+			setTimeout(updateCommandSuggestions, 0);
+		}
+	}
 
 	function openNote(note: Note) {
 		noteDialog?.open(note, data.folders);
@@ -133,9 +200,32 @@
 					cancel();
 					return;
 				}
-				return async ({ update }) => {
-					isActive = false;
+				return async ({ result, update }) => {
 					await update();
+					const isCommand =
+						result.type === 'success' &&
+						result.data &&
+						typeof result.data === 'object' &&
+						'command' in result.data &&
+						result.data.command === true;
+					const actionSucceeded =
+						(result.type === 'success' || result.type === 'failure') &&
+						result.data &&
+						typeof result.data === 'object' &&
+						'success' in result.data &&
+						result.data.success === true;
+					if (isCommand) {
+						isActive = true;
+						descriptionDraft = '';
+						activeCommandIndex = 0;
+						suggestionDismissed = false;
+						await tick();
+						descriptionInput?.focus();
+					} else if (actionSucceeded) {
+						isActive = false;
+					} else {
+						isActive = true;
+					}
 				};
 			}}
 			class="mt-6 rounded-2xl border border-line bg-paper shadow-paper transition-shadow focus-within:shadow-lift hover:shadow-lift {isActive
@@ -168,10 +258,48 @@
 			<div class:hidden={!isActive}>
 				<label class="sr-only" for="note-content">Note content</label>
 				<textarea
+					bind:this={descriptionInput}
+					bind:value={descriptionDraft}
 					class="min-h-44 w-full resize-y border-0 bg-transparent text-base leading-7 outline-none placeholder:text-[#75777a] sm:min-h-52 sm:text-lg sm:leading-8"
 					id="note-content"
 					name="desc"
-					placeholder="Start writing..."></textarea>
+					placeholder="Start writing..."
+					aria-autocomplete="list"
+					aria-controls="quick-command-suggestions"
+					aria-activedescendant={commandSuggestions.length
+						? `quick-command-option-${activeCommandIndex}`
+						: undefined}
+					oninput={updateCommandSuggestions}
+					onkeydown={handleDescriptionKeydown}></textarea>
+				{#if commandSuggestions.length}
+					<div
+						class="mt-2 overflow-hidden rounded-xl border border-line bg-paper shadow-lift"
+						id="quick-command-suggestions"
+						role="listbox"
+						aria-label="Quick commands"
+					>
+						{#each commandSuggestions as item, index}
+							<button
+								class="flex w-full cursor-pointer items-start gap-3 px-3 py-2.5 text-left transition hover:bg-soft {activeCommandIndex ===
+								index
+									? 'bg-soft'
+									: ''}"
+								id="quick-command-option-{index}"
+								role="option"
+								aria-selected={activeCommandIndex === index}
+								type="button"
+								onmousedown={(event) => event.preventDefault()}
+								onclick={() => selectQuickCommand(item.command)}
+							>
+								<code class="shrink-0 text-sm font-bold text-ink">{item.command}</code>
+								<span class="text-xs text-muted">{item.description}</span>
+							</button>
+						{/each}
+					</div>
+				{/if}
+				<p class="mt-2 text-xs text-muted">
+					Press <code>/</code> to see available command.
+				</p>
 				<div class="mt-4 grid gap-3 sm:grid-cols-2">
 					<label class="text-xs font-semibold text-muted" for="note-folder"
 						>Folder

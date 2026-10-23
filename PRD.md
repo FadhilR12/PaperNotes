@@ -180,6 +180,9 @@ FR-11 memastikan pembatasan akses berdasarkan pemilik melalui aturan koleksi Poc
 - Catatan baru dikaitkan dengan pengguna yang sedang masuk.
 - Pengguna dapat menetapkan catatan ke satu folder atau membiarkannya tanpa folder.
 - Pengguna dapat memasukkan hingga 10 tag per catatan dalam satu input dipisahkan koma. Tag dinormalisasi menjadi huruf kecil, memiliki panjang maksimal 50 karakter, dan digunakan kembali untuk catatan lain milik pengguna yang sama.
+- Saat form diperluas, command dimasukkan melalui kolom deskripsi. Mengetik `/` menampilkan suggestion inline untuk `/newFolder`, `/Folder`, dan `/tags`, dengan `/newFolder` terpilih secara default; suggestion dapat dipilih dengan mouse atau keyboard.
+- `/newFolder <nama>` membuat folder. `/Folder <nama-folder> <isi>` menyimpan catatan di folder milik pengguna yang sudah ada; jika folder tidak ditemukan, command tersebut diperlakukan sebagai teks deskripsi biasa. `/tags <nama>` membuat/menggunakan ulang tag. Beberapa command dapat dipadukan pada satu deskripsi; teks setelah argumen command menjadi isi catatan dan catatan akan dikaitkan dengan folder/tag yang dituju. `/newFolder` dan `/tags` tanpa isi catatan hanya membuat folder atau tag, sementara `/Folder` tanpa isi tidak membuat catatan; form tetap terbuka untuk input berikutnya.
+- Teks yang diawali `/` tetapi bukan command yang tersedia diperlakukan sebagai isi catatan biasa dan disimpan apa adanya.
 
 ### 6.4 Membuka dan memperbarui catatan
 
@@ -250,6 +253,16 @@ FR-11 memastikan pembatasan akses berdasarkan pemilik melalui aturan koleksi Poc
 5. Server memeriksa isi form, memastikan folder/tag terkait dimiliki pengguna aktif, dan mengaitkan catatan dengan pengguna tersebut.
 6. PocketBase menyimpan catatan dan relasi tag.
 7. Halaman memuat data terbaru.
+
+Command cepat dapat digunakan pada kolom deskripsi setelah form diperluas:
+
+- `/newFolder test hallo semua` membuat folder `test` dan catatan berisi `hallo semua` di folder itu.
+- `/Folder test hallo semua` menyimpan catatan berisi `hallo semua` di folder `test` yang sudah ada.
+- `/Folder tidakAda hallo semua` menyimpan seluruh teks command sebagai deskripsi biasa karena folder `tidakAda` tidak ditemukan.
+- `/tags lyrics` membuat atau menggunakan ulang tag `lyrics` tanpa membuat catatan.
+- Jika isi ditambahkan setelah nama tag, catatan dibuat dan dikaitkan dengan tag tersebut.
+- `/Folder test isi catatan /tags lyrics` menyimpan catatan berisi `isi catatan` di folder `test` dengan tag `lyrics`.
+- Teks seperti `/hallo semua aku a` bukan command, sehingga tersimpan sebagai isi catatan tanpa error.
 
 ### 7.4 Mencari dan membuka catatan
 
