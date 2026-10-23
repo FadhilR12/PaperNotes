@@ -7,6 +7,7 @@
 	import type { Note } from '$lib/repository/type.js';
 
 	let isActive = $state(false);
+	let isClosingCapture = $state(false);
 	let noteDialog = $state<NoteDialog | undefined>(undefined);
 	let { data, form } = $props();
 	let descriptionDraft = $state('');
@@ -38,6 +39,34 @@
 	let tagDragStartX = 0;
 	let tagDragStartScrollLeft = 0;
 	let suppressTagClick = false;
+
+	function resetCommandInput() {
+		descriptionDraft = '';
+		commandQuery = null;
+		commandSuggestionStart = -1;
+		activeCommandIndex = 0;
+		suggestionDismissed = false;
+	}
+
+	function closeCapture() {
+		if (isClosingCapture) return;
+		const form = document.querySelector<HTMLFormElement>('#quick-note-form');
+		if (!form) return;
+
+		const formData = new FormData(form);
+		const title = formData.get('title')?.toString().trim() ?? '';
+		const desc = formData.get('desc')?.toString().trim() ?? '';
+		if (!title && !desc) {
+			form.reset();
+			resetCommandInput();
+			isActive = false;
+			return;
+		}
+
+		isClosingCapture = true;
+		form.requestSubmit();
+	}
+
 	let notes = $derived(
 		data.note.filter((note: Note) => {
 			const inFolder = !selectedFolder || note.folder_id === selectedFolder;
@@ -215,15 +244,22 @@
 						'success' in result.data &&
 						result.data.success === true;
 					if (isCommand) {
-						isActive = true;
-						descriptionDraft = '';
-						activeCommandIndex = 0;
-						suggestionDismissed = false;
-						await tick();
-						descriptionInput?.focus();
+						if (isClosingCapture) {
+							isClosingCapture = false;
+							isActive = false;
+							resetCommandInput();
+						} else {
+							isActive = true;
+							resetCommandInput();
+							await tick();
+							descriptionInput?.focus();
+						}
 					} else if (actionSucceeded) {
+						if (isClosingCapture) resetCommandInput();
+						isClosingCapture = false;
 						isActive = false;
 					} else {
+						isClosingCapture = false;
 						isActive = true;
 					}
 				};
@@ -331,13 +367,10 @@
 				class:hidden={!isActive}
 			>
 				<button
-					onclick={() => (isActive = false)}
+					onclick={closeCapture}
+					disabled={isClosingCapture}
 					class="inline-flex h-10 cursor-pointer items-center rounded-lg px-4 text-sm font-bold text-muted transition hover:bg-soft hover:text-ink"
-					type="button">Cancel</button
-				>
-				<button
-					class="inline-flex h-10 cursor-pointer items-center rounded-lg bg-ink px-4 text-sm font-bold text-white transition hover:bg-ink/85"
-					type="submit">Save note</button
+					type="button">Close</button
 				>
 			</div>
 		</form>

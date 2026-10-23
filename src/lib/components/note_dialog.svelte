@@ -10,6 +10,8 @@
 	let historyOpen = $state(false);
 	let historyLoading = $state(false);
 	let actionError = $state('');
+	let isSaving = $state(false);
+	let originalValues = { title: '', desc: '', folder: '', tags: '' };
 
 	function isActionData(
 		data: unknown
@@ -26,13 +28,43 @@
 	export function open(note: Note, availableFolders: Folder[]) {
 		selectedNote = { ...note, tags: [...note.tags] };
 		folders = availableFolders;
+		originalValues = {
+			title: note.title,
+			desc: note.desc,
+			folder: note.folder_id,
+			tags: note.tags.map((tag) => tag.name).join(', ')
+		};
 		versions = [];
 		historyOpen = false;
 		actionError = '';
+		isSaving = false;
 		dialogElement.showModal();
 	}
 
-	export function close() {
+	export async function close() {
+		if (isSaving) return;
+		const form = document.querySelector<HTMLFormElement>('#update-note-form');
+		if (form) {
+			const formData = new FormData(form);
+			const hasChanges =
+				formData.get('title') !== originalValues.title ||
+				formData.get('desc') !== originalValues.desc ||
+				formData.get('folder') !== originalValues.folder ||
+				formData.get('tags') !== originalValues.tags;
+
+			if (hasChanges) {
+				isSaving = true;
+				try {
+					if (!(await sendAction(form))) return;
+				} finally {
+					isSaving = false;
+				}
+			}
+		}
+		closeWithoutSaving();
+	}
+
+	function closeWithoutSaving() {
 		dialogElement.close();
 		selectedNote = null;
 	}
@@ -66,7 +98,11 @@
 		event.preventDefault();
 		const form = event.currentTarget;
 		if (!(form instanceof HTMLFormElement)) return;
-		if (await sendAction(form)) close();
+		if (await sendAction(form)) closeWithoutSaving();
+	}
+
+	function preventUpdateSubmit(event: SubmitEvent) {
+		event.preventDefault();
 	}
 
 	async function loadHistory() {
@@ -115,7 +151,7 @@
 		data.set('versionId', versionId);
 		const restoreForm = document.createElement('form');
 		restoreForm.action = '?/restoreVersion';
-		if (await sendAction(restoreForm, data)) close();
+		if (await sendAction(restoreForm, data)) closeWithoutSaving();
 	}
 </script>
 
@@ -123,10 +159,14 @@
 	bind:this={dialogElement}
 	class="m-auto w-[calc(100%-2rem)] max-w-3xl rounded-2xl border border-line bg-paper p-0 text-ink shadow-lift backdrop:bg-ink/25"
 	id="note-dialog"
+	oncancel={(event) => {
+		event.preventDefault();
+		void close();
+	}}
 >
 	{#if selectedNote}
 		<div class="p-5 sm:p-6">
-			<form id="update-note-form" method="POST" action="?/update" onsubmit={handleSubmit}>
+			<form id="update-note-form" method="POST" action="?/update" onsubmit={preventUpdateSubmit}>
 				<input type="hidden" name="id" value={selectedNote.id} />
 				<label class="sr-only" for="modal-note-title">Note title</label>
 				<input
@@ -201,13 +241,9 @@
 					</button>
 					<button
 						onclick={close}
+						disabled={isSaving}
 						class="inline-flex h-10 cursor-pointer items-center rounded-lg px-3 text-sm font-bold text-muted transition hover:bg-soft hover:text-ink"
 						type="button">Close</button
-					>
-					<button
-						form="update-note-form"
-						class="inline-flex h-10 cursor-pointer items-center rounded-lg bg-ink px-4 text-sm font-bold text-white transition hover:bg-ink/85"
-						type="submit">Save changes</button
 					>
 				</div>
 			</div>
