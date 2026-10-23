@@ -8,21 +8,151 @@
     "relationshipMode": "All",
     "tablePositions": [
       {
-        "name": "user",
+        "name": "users",
         "schemaName": "public",
-        "x": 0,
+        "x": -81.90476190476193,
+        "y": 116.66666666666669
+      },
+      {
+        "name": "folders",
+        "schemaName": "public",
+        "x": 464.52650669642844,
+        "y": 204.28571428571422
+      },
+      {
+        "name": "notes",
+        "schemaName": "public",
+        "x": 439.95222893263553,
+        "y": 545.6470486054243
+      },
+      {
+        "name": "tags",
+        "schemaName": "public",
+        "x": 836.7705078125,
         "y": 50
       },
       {
-        "name": "note",
+        "name": "note_tags",
         "schemaName": "public",
-        "x": -243,
-        "y": 34
+        "x": 810.4761904761904,
+        "y": 270.8571428571428
+      },
+      {
+        "name": "note_versions",
+        "schemaName": "public",
+        "x": 817.7261904761904,
+        "y": 590.9196888127889
       }
     ],
     "tableGroupCollapseStates": [],
     "stickyNoteLayouts": [],
-    "referencePaths": []
+    "referencePaths": [
+      {
+        "firstFieldNames": [
+          "user"
+        ],
+        "firstTableName": "notes",
+        "firstSchemaName": "public",
+        "firstRelation": "*",
+        "secondFieldNames": [
+          "id"
+        ],
+        "secondTableName": "users",
+        "secondSchemaName": "public",
+        "secondRelation": "1",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "user"
+        ],
+        "firstTableName": "folders",
+        "firstSchemaName": "public",
+        "firstRelation": "*",
+        "secondFieldNames": [
+          "id"
+        ],
+        "secondTableName": "users",
+        "secondSchemaName": "public",
+        "secondRelation": "1",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "user"
+        ],
+        "firstTableName": "tags",
+        "firstSchemaName": "public",
+        "firstRelation": "*",
+        "secondFieldNames": [
+          "id"
+        ],
+        "secondTableName": "users",
+        "secondSchemaName": "public",
+        "secondRelation": "1",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "folder"
+        ],
+        "firstTableName": "notes",
+        "firstSchemaName": "public",
+        "firstRelation": "*",
+        "secondFieldNames": [
+          "id"
+        ],
+        "secondTableName": "folders",
+        "secondSchemaName": "public",
+        "secondRelation": "1",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "note_id"
+        ],
+        "firstTableName": "note_tags",
+        "firstSchemaName": "public",
+        "firstRelation": "*",
+        "secondFieldNames": [
+          "id"
+        ],
+        "secondTableName": "notes",
+        "secondSchemaName": "public",
+        "secondRelation": "1",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "tag_id"
+        ],
+        "firstTableName": "note_tags",
+        "firstSchemaName": "public",
+        "firstRelation": "*",
+        "secondFieldNames": [
+          "id"
+        ],
+        "secondTableName": "tags",
+        "secondSchemaName": "public",
+        "secondRelation": "1",
+        "checkPoints": []
+      },
+      {
+        "firstFieldNames": [
+          "note_id"
+        ],
+        "firstTableName": "note_versions",
+        "firstSchemaName": "public",
+        "firstRelation": "*",
+        "secondFieldNames": [
+          "id"
+        ],
+        "secondTableName": "notes",
+        "secondSchemaName": "public",
+        "secondRelation": "1",
+        "checkPoints": []
+      }
+    ]
   },
   "views": {}
 }

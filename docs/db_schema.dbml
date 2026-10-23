@@ -1,14 +1,94 @@
-Table user {
-    user_id BIGINT [primary key]
-	username VARCHAR(100) [not null]
-    email VARCHAR(254) [not null]
-    password CHAR(64) [not null]
+Project PaperNotes {
+  Note: 'Skema PaperNotes yang diterapkan melalui migrasi PocketBase. Password dikelola PocketBase dan tidak tersedia sebagai plaintext.'
 }
 
-Table note {
-    note_id BIGINT [primary key]
-    user_id BIGINT [not null]
-	title text [not null]
-    desc text [not null]
-    created_at BIGINT [not null]
+Table users {
+  id varchar(15) [primary key, note: 'ID record autentikasi yang dibuat PocketBase']
+  name text [note: 'Nama tampilan pengguna']
+  email varchar(254) [not null, unique]
+  password text [note: 'Kredensial dikelola PocketBase; tidak disimpan sebagai plaintext']
+  emailVisibility boolean [default: false]
+  verified boolean [default: false]
+  created timestamp [not null, note: 'Dikelola PocketBase']
+  updated timestamp [not null, note: 'Dikelola PocketBase']
 }
+
+Table folders {
+  id varchar(15) [primary key]
+  user varchar(15) [not null]
+  name varchar(100) [not null]
+  created timestamp [not null]
+  updated timestamp [not null]
+
+  Indexes {
+    (user, name) [unique, name: 'uq_folders_user_name']
+  }
+
+  Note: 'Folder pribadi untuk mengelompokkan catatan.'
+}
+
+Table notes {
+  id varchar(15) [primary key, note: 'ID record yang dibuat PocketBase']
+  user varchar(15) [note: 'Relasi pemilik catatan']
+  folder varchar(15) [note: 'Folder opsional']
+  title text [not null, default: '']
+  desc text [not null, default: '']
+  created timestamp [not null, note: 'Waktu record dibuat oleh PocketBase']
+  updated timestamp [not null, note: 'Waktu record terakhir diperbarui oleh PocketBase']
+
+  Indexes {
+    (user, created) [name: 'idx_notes_user_created']
+  }
+}
+
+Table tags {
+  id varchar(15) [primary key]
+  user varchar(15) [not null]
+  name varchar(50) [not null]
+  created timestamp [not null]
+  updated timestamp [not null]
+
+  Indexes {
+    (user, name) [unique, name: 'uq_tags_user_name']
+  }
+
+  Note: 'Tag pribadi untuk mengorganisasi catatan.'
+}
+
+Table note_tags {
+  id varchar(15) [primary key]
+  note_id varchar(15) [not null]
+  tag_id varchar(15) [not null]
+  created timestamp [not null]
+  updated timestamp [not null]
+
+  Indexes {
+    (note_id, tag_id) [unique, name: 'uq_note_tags_note_tag']
+    (tag_id) [name: 'idx_note_tags_tag']
+  }
+
+  Note: 'Tabel penghubung many-to-many; pasangan catatan dan tag tidak boleh duplikat.'
+}
+
+Table note_versions {
+  id varchar(15) [primary key]
+  note_id varchar(15) [not null]
+  title text [not null, default: '']
+  desc text [not null, default: '']
+  created timestamp [not null, note: 'Waktu snapshot versi disimpan']
+  updated timestamp [not null]
+
+  Indexes {
+    (note_id, created) [name: 'idx_note_versions_note_created']
+  }
+
+  Note: 'Snapshot isi sebelumnya yang dibuat ketika judul atau isi catatan diperbarui.'
+}
+
+Ref: notes.user > users.id
+Ref: folders.user > users.id
+Ref: tags.user > users.id
+Ref: notes.folder > folders.id
+Ref: note_tags.note_id > notes.id
+Ref: note_tags.tag_id > tags.id
+Ref: note_versions.note_id > notes.id
